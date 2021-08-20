@@ -394,6 +394,7 @@ RTL version -->
                         var raza_m = $('#raza_pet').val();
                         var edad_m = $('#edad_pet').val();
                         var fotoasd = $('#foto_pet').val();
+                        $('#form_clientemascota').trigger("reset");
 
     
                         if (rut != "" && nombre_d != "" && pat_d != "" && mat_d != "" && comuna_d != "" && dire_d != "" && sector_d != "" && email_d != "" && tele_d != "" &&
@@ -418,13 +419,14 @@ RTL version -->
                                     correo: email_d,
                                     telefono: tele_d,
                                     referencia: ref_d,
+                                    
                                 },
                                 success: function(data) {
     
                                     alertify.set('notifier', 'position', 'top-center');
                                     alertify.set('notifier', 'delay', 3);
                                     alertify.success(data);
-    
+
                                     $('#rut').val('');
                                     $('#nombre_input').val('');
                                     $('#pat_input').val('');

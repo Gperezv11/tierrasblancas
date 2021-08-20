@@ -87,6 +87,17 @@
                         </div>
 
                         <div class="form-group">
+                          <label for="">Tipo de Servicio</label>
+                          <select class="form-control" name="tservicio" id="tservicio">
+                            <option value="" disabled selected>Seleccione un servicio</option>
+                            <option value="Consulta">Consulta</option>
+                            <option value="Cirugia">Cirugia</option>
+                            <option value="Vacuna">Vacuna</option>
+                            <option value="Procedimiento">Procedimiento</option>
+                          </select>
+                        </div>
+
+                        <div class="form-group">
                             <label for="descripcion">Descripcion</label>
                             <textarea class="form-control" name="descripcion" id="descripcion" rows="3"></textarea>
                         </div>
@@ -170,6 +181,17 @@
                             <input type="text" class="form-control" name="fono_edit" id="fono_edit"
                                 aria-describedby="helpId">
                         </div>
+
+                        <div class="form-group">
+                            <label for="">Tipo de Servicio</label>
+                            <select class="form-control" name="tservicio_edit" id="tservicio_edit">
+                              <option value="" disabled selected>Seleccione un servicio</option>
+                              <option value="Consulta">Consulta</option>
+                              <option value="Cirugia">Cirugia</option>
+                              <option value="Vacuna">Vacuna</option>
+                              <option value="Procedimiento">Procedimiento</option>
+                            </select>
+                          </div>
 
                         <div class="form-group">
                             <label for="descripcion">Descripcion</label>

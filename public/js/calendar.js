@@ -30,12 +30,18 @@ document.addEventListener('DOMContentLoaded', function () {
         },
 
         slotMinTime: '10:00',
-        slotMaxTime: '18:00',
+        slotMaxTime: '19:00',
         businessHours: [
             {
                 daysOfWeek: [1, 2, 3, 4, 5, 6],
                 startTime: '10:00',
-                endTime: '18:00',
+                endTime: '14:00',
+            },
+            {
+                daysOfWeek: [1,2,3,4,5,6],
+                startTime: '15:00',
+                endTime: '19:00',
+
             },
         ],
 
@@ -111,6 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var nombre_cliente = $('#nom_cliente').val();
         var email = $('#email').val();
         var fono = $('#fono').val();
+        var tservicio = $('#tservicio').val();
         var descripcion = $('#descripcion').val();
         var start = $('#start').val();
         var end = $('#end').val();
@@ -132,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     nombre_cliente: nombre_cliente,
                     email: email,
                     fono: fono,
+                    tservicio: tservicio,
                     descripcion: descripcion,
                     start: start,
                     end: end,
@@ -187,6 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var nombre_cliente_edit = document.getElementById('nombre_cliente_edit').value
         var email_edit = document.getElementById('email_edit').value
         var fono_edit = document.getElementById('fono_edit').value
+        var tservicio_edit = document.getElementById('tservicio_edit').value
         var descripcion_edit = document.getElementById('descripcion_edit').value
         var start_edit = document.getElementById('start_edit').value
         var end_edit = document.getElementById('end_edit').value
@@ -207,6 +216,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 nombre_cliente: nombre_cliente_edit,
                 email: email_edit,
                 fono: fono_edit,
+                tservicio: tservicio_edit,
                 descripcion: descripcion_edit,
                 start: start_edit,
                 end: end_edit
@@ -221,4 +231,62 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
         });
     });
+
+    $('#rut_cliente').change(function(){
+        var rut = $('#rut_cliente').val()
+
+        $.ajax({
+            type:"get",
+            url:"fRut",
+            data:{
+                "rut" : rut,
+            },
+            success: function(data) {
+                // despejar punto
+                var valor = rut.replace('.', '');
+                // Despejar Guión
+                valor = valor.replace('-', '');
+                valor = valor.replace('.', '');
+                // Aislar Cuerpo y Dígito Verificador
+                var cuerpo = valor.slice(0, -1);
+
+                var dv = valor.slice(-1).toUpperCase();
+                var rutformato = cuerpo.substr(0, 2) + "." + cuerpo.substr(
+                        2,
+                        3) + "." + cuerpo.substr(5, cuerpo.length) + "-" +
+                    dv;
+                document.getElementById("rut_cliente").value = rutformato;
+
+                $.ajax({
+                    type: "get",
+                    url: "frcc",
+                    data:{
+                        rut : rutformato
+                    },
+        
+                    success: function(data){
+                        $('#nom_cliente').val(data[0].nombre+' '+data[0].apellido_p);
+                        $('#email').val(data[0].correo);
+                        $('#fono').val(data[0].telefono);
+                    }
+                })
+            },
+        });
+    })
+
+        var rut = $('#rut_cliente').val()
+
+        $.ajax({
+            type: "get",
+            url: "frcc",
+            data:{
+                rut : rut
+            },
+
+            success: function(data){
+                $('#nom_cliente').val(data[0].nombre+' '+data[0].apellido_p);
+                $('#email').val(data[0].correo);
+                $('#fono').val(data[0].telefono);
+            }
+        })
 });

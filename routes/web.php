@@ -6,6 +6,7 @@ use App\Http\Controllers\VetMedicoController;
 use App\Http\Controllers\VetMascotaController;
 use App\Http\Controllers\VetListaClienteController;
 use App\Http\Controllers\VetCalendarioController;
+use App\Http\Controllers\RutController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,9 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+//Formato de Rut
+Route::get('fRut', [RutController::class, 'formatoRut']);
+
 //Veterinaria - Clientes/mascotas
 Route::resource('macliente', MaClienteController::class);
 Route::get('rutFinder', [MaClienteController::class, 'rutFinder']);
@@ -36,6 +40,7 @@ Route::resource('lvetcliente', VetListaClienteController::class);
 
 //Veterinaria - Medico
 Route::resource('vetmedico', VetMedicoController::class);
+Route::get('frd', [VetMedicoController::class, 'formatoRut']);
 
 //Veterinaria - Calendario
 Route::resource('calendario', VetCalendarioController::class);
@@ -44,3 +49,4 @@ Route::post('calendario/agendar', [VetCalendarioController::class, 'store']);
 Route::post('calendario/editar/{id}', [VetCalendarioController::class, 'edit']);
 Route::post('calendario/actualizar/{evento}', [VetCalendarioController::class, 'update']);
 Route::post('calendario/borrar/{id}', [VetCalendarioController::class, 'destroy']);
+Route::get('frcc', [VetCalendarioController::class, 'frcc']);

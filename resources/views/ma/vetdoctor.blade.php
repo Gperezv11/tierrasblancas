@@ -152,9 +152,13 @@
                                                                         name="mat_edit" value="{{ $m->apellido_m }}">
                                                                 </div>
                                                                 <div class="form-group">
-                                                                    <label>Especialidad</label>
-                                                                    <input type="text" class="form-control" id="esp_edit"
-                                                                        name="esp_edit" value="{{ $m->especialidad }}">
+                                                                    <label for="">Especialidad</label>
+                                                                    <select class='form-control' name="esp_edit" id="esp_edit">
+                                                                        <option value="" disabled selected>Elija una especialidad</option>
+                                                                        @foreach ($especialidad as $s)
+                                                                            <option value='{{ $s->id }}'{{ $s->id == $m->vet_especialidads_id ? 'selected' :'' }}>{{ $s->nombre_especialidad }}</option>
+                                                                        @endforeach
+                                                                    </select>
                                                                 </div>
                                                                 <div class="form-group">
                                                                     <label>Codigo Doctor</label>
@@ -187,11 +191,54 @@
 
 @section('scripts')
     <script>
+        //Datatable
         $(document).ready(function() {
             $.noConflict();
             $('#tabla_medico').DataTable({
-                responsive: true
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json',
+                    responsive: true
+                }
             });
         });
+
+        $('#rut').change(function() {
+                    var rut = $('#rut').val()
+                    console.log(rut)
+    
+                    $.ajax({
+                        type: 'get',
+                        url: '{!! URL::to('frd') !!}',
+                        data: {
+                            'rut': rut
+                        },
+    
+                        success: function(data) {
+                            // despejar punto
+                            var valor = rut.replace('.', '');
+                            // Despejar Guión
+                            valor = valor.replace('-', '');
+                            valor = valor.replace('.', '');
+                            // Aislar Cuerpo y Dígito Verificador
+                            var cuerpo = valor.slice(0, -1);
+    
+                            var dv = valor.slice(-1).toUpperCase();
+                            var rutformato = cuerpo.substr(0, 2) + "." + cuerpo.substr(
+                                    2,
+                                    3) + "." + cuerpo.substr(5, cuerpo.length) + "-" +
+                                dv;
+                            document.getElementById("rut").value = rutformato;
+                        },
+                    });
+    
+                    function dgv(T) //digito verificador
+                    {
+                        var M = 0,
+                            S = 1;
+                        for (; T; T = Math.floor(T / 10))
+                            S = (S + T % 10 * (9 - M++ % 6)) % 11;
+                        return S ? S - 1 : 'k';
+                    }
+                });
     </script>
 @endsection

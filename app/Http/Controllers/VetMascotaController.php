@@ -82,7 +82,16 @@ class VetMascotaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $m = VetMascota::find($id);
+
+        $m->nombre          =   $request->nombre_edit;
+        $m->especie         =  $request->especie_edit;
+        $m->raza            =   $request->raza_edit;
+        $m->edad            =   $request->edad_edit;          
+
+        $m->save();
+
+        return redirect('vetmascota');
     }
 
     /**

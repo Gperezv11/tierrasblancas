@@ -20,6 +20,23 @@ class VetMedicoController extends Controller
         return view('ma.vetdoctor')->with('medico', $medico)->with('especialidad', $especialidad);
     }
 
+    public function formatoRut(Request $request)
+    {
+
+        function formatorut($rut_param)
+        {
+            $parte1 = substr($rut_param, 0, 2); //12
+            //Log::error($parte1);
+            $parte2 = substr($rut_param, 2, 3); //345
+            //Log::error($parte2);
+            $parte3 = substr($rut_param, 5, 3); //456
+            //Log::error($parte3);
+            $parte4 = substr($rut_param, 8);   //todo despues del caracter 8
+            //Log::error($parte4);
+            return $parte1 . "." . $parte2 . "." . $parte3 . "-" .  $parte4;
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -84,12 +101,12 @@ class VetMedicoController extends Controller
     {
         $m = VetMedico::find($id);
 
-        $m->rut             =   $request->rut;
-        $m->nombre          =   $request->nom_edit;
-        $m->apellido_p      =   $request->pat_edit;
-        $m->apellido_m      =   $request->mat_edit;
-        $m->especialidad    =   $request->esp_edit;
-        $m->codigo          =   $request->cod_edit;
+        $m->rut                     =   $request->rut;
+        $m->nombre                  =   $request->nom_edit;
+        $m->apellido_p              =   $request->pat_edit;
+        $m->apellido_m              =   $request->mat_edit;
+        $m->vet_especialidads_id    =   $request->esp_edit;
+        $m->codigo                  =   $request->cod_edit;
 
         $m->save();
 

@@ -83,6 +83,7 @@ class MaClienteController extends Controller
             $vc->referencia = $request->referencia;
 
             $vc->save();
+            // Mail::to($vc->correo)->send(new EmailCliente($vc));
         }
 
         return response()->json($data);

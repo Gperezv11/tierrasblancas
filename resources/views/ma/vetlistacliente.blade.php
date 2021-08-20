@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-    <link href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -60,7 +60,81 @@
                                         </form>
                                     </td>
                                 </tr>
-
+                                <!-- Modal -->
+                                <div class="modal fade" id="editModal{{ $c->id }}" tabindex="-1" role="dialog"
+                                    aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongTitle">Editar Cliente</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="{{ route('lvetcliente.update', $c->id) }}" method="post">
+                                                    @csrf
+                                                    {{ method_field('PUT') }}
+                                                    <div class="form-group">
+                                                        <label for="">Rut</label>
+                                                        <input type="text" class="form-control" name="rut_edit"
+                                                            id="rut_edit" value="{{ $c->rut }}">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="">Nombre</label>
+                                                        <input type="text" class="form-control" name="nombre_edit"
+                                                            id="nombre_edit" value="{{ $c->nombre }}">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="">Apellido Paterno</label>
+                                                        <input type="text" class="form-control" name="apellidop_edit"
+                                                            id="apellidop_edit" value="{{ $c->apellido_p }}">
+                                                    </div>                             
+                                                    <div class="form-group">
+                                                        <label for="">Apellido Materno</label>
+                                                        <input type="text" class="form-control" name="apellidom_edit"
+                                                            id="apellidop_edit" value="{{ $c->apellido_m }}">
+                                                    </div>
+                                                    <div class="form-group">
+                                                      <label for="">Dirección</label>
+                                                      <input type="text"
+                                                        class="form-control" name="direc_edit" id="direc_edit" value="{{ $c->direccion }}">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="">Sector</label>
+                                                        <select class="form-control" name="sector_edit" id="sector_edit">
+                                                            <option value="" disabled selected>Elija un sector</option>
+                                                            <option value="1" {{ $c->sector == 1 ? 'selected' : '' }}>Sector A</option>
+                                                            <option value="2" {{ $c->sector == 2 ? 'selected' : '' }}>Sector B</option>
+                                                            <option value="3" {{ $c->sector == 3 ? 'selected' : '' }}>Sector C</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="">Correo</label>
+                                                        <input type="text" class="form-control" name="correo_edit"
+                                                            id="correo_edit" value="{{ $c->correo }}">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="">Telefono</label>
+                                                        <input type="text" class="form-control" name="telefono_edit"
+                                                            id="telefono_edit" value="{{ $c->telefono }}">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="">Referencia</label>
+                                                        <textarea class="form-control" name="referencia_edit" id="referencai_edit"
+                                                            rows="3">{{ $c->referencia }}</textarea>
+                                                    </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-dismiss="modal">Cerrar</button>
+                                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                            </div>
+                                        </form>
+                                        </div>
+                                    </div>
+                                </div>
                                 @endforeach
                             </tbody>
                         </table>

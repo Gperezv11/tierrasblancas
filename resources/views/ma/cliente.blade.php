@@ -21,6 +21,8 @@ RTL version -->
 <!-- Bootstrap theme -->
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.rtl.min.css" />
 
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
 @endsection
 
 @section('content')
@@ -56,7 +58,7 @@ RTL version -->
                                 aria-controls="nav-profile" aria-selected="false">Datos de Mascota</a>
                         </div>
                     </nav>
-                    <form name="form_clientemascota" id="form_clientemascota" method="POST">
+                    <form name="form_clientemascota" id="form_clientemascota" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="tab-content" id="nav-tabContent">
                             <div class="tab-pane fade show active" id="nav-home" role="tabpanel"
@@ -206,8 +208,7 @@ RTL version -->
                                                         <p>Imagen de referencia</p>
                                                         <img id="blah" class="" src="https://via.placeholder.com/150" alt="" style="max-width:150px;width:100%">
                                                         <br>
-                                                        <button class="addfiles">Add Files</button>
-                                                        <input id="fileupload" type="file" name="files[]" multiple style='display: none;'>
+                                                        <input id="foto_pet" accept="image/*" type='file' name="foto_pet"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-6">
@@ -226,6 +227,10 @@ RTL version -->
                                                     <div class="form-group">
                                                         <label>Raza</label>
                                                         <input type="text" class="form-control" name="raza_pet" id="raza_pet">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Fecha de nacimiento</label>
+                                                        <input type="date" class="form-control datepicker" name="fdc_pet" id="fdc_pet">
                                                     </div>
                                                     <div class="form-group">
                                                         <label>Edad</label>
@@ -258,214 +263,228 @@ RTL version -->
 
     @section('scripts')
     <script type="text/javascript">
+    
+    //Visualizador de Imagen
+    foto_pet.onchange = evt => {
+        const [file] = foto_pet.files
+        if (file) {
+            blah.src = URL.createObjectURL(file)
+        }
+    }
 
-            //Visualizador de Imagen
-        fileupload.onchange = evt => {
-                const [file] = fileupload.files
-                if (file) {
-                    blah.src = URL.createObjectURL(file)
-                }
-            }
+    //Calculador edad
+    $(document).on('change', '#fdc_pet', function() {
 
-            $('.addfiles').on('click', function() { $('#fileupload').click();return false;});
-        //formateador Rut cliente
-            $('#rut').change(function() {
-                var rut = $('#rut').val()
-                console.log(rut)
+        var fechin = document.getElementById('fdc_pet').value;
+        var today = new Date(),
+            dob = new Date(fechin),
+            age = new Date(today - dob).getFullYear() - 1970;
 
-                var asd = rut.substr(rut.length - 1, rut.length)
-                var asd3 = dgv(rut.substr(0, rut.length - 1))
+        document.getElementById('edad_pet').value = age;
+    });
+    
+                $('.addfiles').on('click', function() { $('#fileupload').click();return false;});
+            //formateador Rut cliente
+                $('#rut').change(function() {
+                    var rut = $('#rut').val()
 
-                $.ajax({
-                    type: 'get',
-                    url: '{!! URL::to('formatoRut') !!}',
-                    data: {
-                        'rut': rut
-                    },
-
-                    success: function(data) {
-                        // despejar punto
-                        var valor = rut.replace('.', '');
-                        // Despejar Guión
-                        valor = valor.replace('-', '');
-                        valor = valor.replace('.', '');
-                        // Aislar Cuerpo y Dígito Verificador
-                        var cuerpo = valor.slice(0, -1);
-
-                        var dv = valor.slice(-1).toUpperCase();
-                        var rutformato = cuerpo.substr(0, 2) + "." + cuerpo.substr(
-                                2,
-                                3) + "." + cuerpo.substr(5, cuerpo.length) + "-" +
-                            dv;
-                        document.getElementById("rut").value = rutformato;
-                        $.ajax({
+    
+                    var asd = rut.substr(rut.length - 1, rut.length)
+                    var asd3 = dgv(rut.substr(0, rut.length - 1))
+    
+                    $.ajax({
                         type: 'get',
-                        url: '{!! URL::to('rutFinder') !!}',
+                        url: '{!! URL::to('formatoRut') !!}',
                         data: {
-                        'rut': rutformato
+                            'rut': rut
                         },
+    
                         success: function(data) {
-                        console.log(data);
-                        document.getElementById("nombre_input").value = data[0].nombre;
-                        document.getElementById("pat_input").value = data[0].apellido_p;
-                        document.getElementById("mat_input").value = data[0].apellido_m;
-                        document.getElementById("dire_input").value = data[0].direccion;
-                        document.getElementById("email_input").value = data[0].correo;
-                        document.getElementById("ref_input").value = data[0].referencia;
-                        document.getElementById("tele_input").value = data[0].telefono;
-                        $('#comuna_dd').val(data[0].comuna);
-                        
-                        var idowner = data[0].id;
-                        },
-                    error: function(data) {
-                        console.log('Nuevo Ingreso')
-                    }
-                });
-                    },
-                });
-
-                function dgv(T) //digito verificador
-                {
-                    var M = 0,
-                        S = 1;
-                    for (; T; T = Math.floor(T / 10))
-                        S = (S + T % 10 * (9 - M++ % 6)) % 11;
-                    return S ? S - 1 : 'k';
-                }
-            });
-            $(document).on('change', '#region_dd', function() {
-                var region = $(this).val();
-                var div = $(this).parent();
-                var op = " ";
-                $.ajax({
-                    type: 'get',
-                    url: '{!! URL::to('findComuna') !!}',
-                    data: {
-                        'id': region
-                    },
-                    success: function(data) {
-                        op += '<option value="0" selected disabled>Elija comuna</option>';
-                        for (var i = 0; i < data.length; i++) {
-                            op += '<option value="' + data[i].id + '">' + data[i].nombre +
-                                '</option>';
-                        }
-                        $('#comuna_dd').html(" ");
-                        $('#comuna_dd').append(op);
-                    },
-                    error: function() {
-
-                    }
-                });
-            });
-            
-            //Ingreso de Cliente
-            $(document).ready(function() {
-                $('#butsave').on('click', function() {
-                    var rut = $('#rut').val();
-                    var nombre_d = $('#nombre_input').val();
-                    var pat_d = $('#pat_input').val();
-                    var mat_d = $('#mat_input').val();
-                    var comuna_d = $('#comuna_dd').val();
-                    var dire_d = $('#dire_input').val();
-                    var sector_d = $('#sector_dd').val();
-                    var email_d = $('#email_input').val();
-                    var tele_d = $('#tele_input').val();
-                    var ref_d = $('#ref_input').val();
-
-                    var nombre_m = $('#nom_pet').val();
-                    var especie_m = $('#especie_dd').val();
-                    var raza_m = $('#raza_pet').val();
-                    var edad_m = $('#edad_pet').val();
-
-                    if (rut != "" && nombre_d != "" && pat_d != "" && mat_d != "" && comuna_d != "" && dire_d != "" && sector_d != "" && email_d != "" && tele_d != "" &&
-                        ref_d != "") {
-
-                        $.ajaxSetup({
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            }
-                        });
-                        $.ajax({
-                            url: '{{ route('macliente.store') }}',
-                            type: "POST",
-                            data: {
-                                rut: rut,
-                                nombre: nombre_d,
-                                apellido_p: pat_d,
-                                apellido_m: mat_d,
-                                comuna: comuna_d,
-                                direccion: dire_d,
-                                sector: sector_d,
-                                correo: email_d,
-                                telefono: tele_d,
-                                referencia: ref_d,
-                            },
-                            success: function(data) {
-
-                                alertify.set('notifier', 'position', 'top-center');
-                                alertify.set('notifier', 'delay', 3);
-                                alertify.success(data);
-
-                                $('#rut').val('');
-                                $('#nombre_input').val('');
-                                $('#pat_input').val('');
-                                $('#mat_input').val('');
-                                $('#region_dd').val('');
-                                $('#comuna_dd').val('');
-                                $('#dire_input').val('');
-                                $('#sector_dd').val('');
-                                $('#email_input').val('');
-                                $('#tele_input').val('');
-                                $('#ref_input').val('');
-
-                            }
-                        });
-                        $.ajaxSetup({
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            }
-                        });
-                        $.ajax({
+                            // despejar punto
+                            var valor = rut.replace('.', '');
+                            // Despejar Guión
+                            valor = valor.replace('-', '');
+                            valor = valor.replace('.', '');
+                            // Aislar Cuerpo y Dígito Verificador
+                            var cuerpo = valor.slice(0, -1);
+    
+                            var dv = valor.slice(-1).toUpperCase();
+                            var rutformato = cuerpo.substr(0, 2) + "." + cuerpo.substr(
+                                    2,
+                                    3) + "." + cuerpo.substr(5, cuerpo.length) + "-" +
+                                dv;
+                            document.getElementById("rut").value = rutformato;
+                            $.ajax({
                             type: 'get',
                             url: '{!! URL::to('rutFinder') !!}',
                             data: {
-                                'rut': rut
+                            'rut': rutformato
                             },
                             success: function(data) {
-                                var idowner = data[0].id;
-                                console.log('ID Capturada');
-                                console.log(data[0].id);
-                                $.ajax({
-                                    url: '{{ route('vetmascota.store') }}',
-                                    type: "POST",
-                                    data: {
-                                        vet_clientes_id: idowner,
-                                        nombre: nombre_m,
-                                        especie: especie_m,
-                                        raza: raza_m,
-                                        edad: edad_m,
-
-                                    },
-                                    success: function(data) {
-                                        console.log(
-                                            'Mascota creada')
-                                        alertify.set('notifier', 'position',
-                                            'top-center');
-                                        alertify.set('notifier', 'delay', 3);
-                                        alertify.success(data);
-
-                                    },
-                                });
-                            }
-                        });
-                    } else {
-                        alertify.set('notifier', 'position', 'top-center');
-                        alertify.set('notifier', 'delay', 3);
-                        alertify.error('Ningun campo puede estar vacio. Por favor ingrese todos los datos');
+                            console.log(data);
+                            document.getElementById("nombre_input").value = data[0].nombre;
+                            document.getElementById("pat_input").value = data[0].apellido_p;
+                            document.getElementById("mat_input").value = data[0].apellido_m;
+                            document.getElementById("dire_input").value = data[0].direccion;
+                            document.getElementById("email_input").value = data[0].correo;
+                            document.getElementById("ref_input").value = data[0].referencia;
+                            document.getElementById("tele_input").value = data[0].telefono;
+                            $('#comuna_dd').val(data[0].comuna);
+                            
+                            var idowner = data[0].id;
+                            },
+                        error: function(data) {
+                            console.log('Nuevo Ingreso')
+                        }
+                    });
+                        },
+                    });
+    
+                    function dgv(T) //digito verificador
+                    {
+                        var M = 0,
+                            S = 1;
+                        for (; T; T = Math.floor(T / 10))
+                            S = (S + T % 10 * (9 - M++ % 6)) % 11;
+                        return S ? S - 1 : 'k';
                     }
+                });
+                $(document).on('change', '#region_dd', function() {
+                    var region = $(this).val();
+                    var div = $(this).parent();
+                    var op = " ";
+                    $.ajax({
+                        type: 'get',
+                        url: '{!! URL::to('findComuna') !!}',
+                        data: {
+                            'id': region
+                        },
+                        success: function(data) {
+                            op += '<option value="0" selected disabled>Elija comuna</option>';
+                            for (var i = 0; i < data.length; i++) {
+                                op += '<option value="' + data[i].id + '">' + data[i].nombre +
+                                    '</option>';
+                            }
+                            $('#comuna_dd').html(" ");
+                            $('#comuna_dd').append(op);
+                        },
+                        error: function() {
+    
+                        }
+                    });
+                });
+                
+                //Ingreso de Cliente
+                $(document).ready(function() {
+                    $('#butsave').on('click', function() {
+                        var rut = $('#rut').val();
+                        var nombre_d = $('#nombre_input').val();
+                        var pat_d = $('#pat_input').val();
+                        var mat_d = $('#mat_input').val();
+                        var comuna_d = $('#comuna_dd').val();
+                        var dire_d = $('#dire_input').val();
+                        var sector_d = $('#sector_dd').val();
+                        var email_d = $('#email_input').val();
+                        var tele_d = $('#tele_input').val();
+                        var ref_d = $('#ref_input').val();
 
+    
+                        var nombre_m = $('#nom_pet').val();
+                        var especie_m = $('#especie_dd').val();
+                        var raza_m = $('#raza_pet').val();
+                        var edad_m = $('#edad_pet').val();
+                        var fotoasd = $('#foto_pet').val();
 
-                })
-            });
+    
+                        if (rut != "" && nombre_d != "" && pat_d != "" && mat_d != "" && comuna_d != "" && dire_d != "" && sector_d != "" && email_d != "" && tele_d != "" &&
+                            ref_d != "") {
+    
+                            $.ajaxSetup({
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                }
+                            });
+                            $.ajax({
+                                url: '{{ route('macliente.store') }}',
+                                type: "POST",
+                                data: {
+                                    rut: rut,
+                                    nombre: nombre_d,
+                                    apellido_p: pat_d,
+                                    apellido_m: mat_d,
+                                    comuna: comuna_d,
+                                    direccion: dire_d,
+                                    sector: sector_d,
+                                    correo: email_d,
+                                    telefono: tele_d,
+                                    referencia: ref_d,
+                                },
+                                success: function(data) {
+    
+                                    alertify.set('notifier', 'position', 'top-center');
+                                    alertify.set('notifier', 'delay', 3);
+                                    alertify.success(data);
+    
+                                    $('#rut').val('');
+                                    $('#nombre_input').val('');
+                                    $('#pat_input').val('');
+                                    $('#mat_input').val('');
+                                    $('#region_dd').val('');
+                                    $('#comuna_dd').val('');
+                                    $('#dire_input').val('');
+                                    $('#sector_dd').val('');
+                                    $('#email_input').val('');
+                                    $('#tele_input').val('');
+                                    $('#ref_input').val('');
+    
+                                }
+                            });
+                            $.ajaxSetup({
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                }
+                            });
+                            $.ajax({
+                                type: 'get',
+                                url: '{!! URL::to('rutFinder') !!}',
+                                data: {
+                                    'rut': rut
+                                },
+                                success: function(data) {
+                                    var idowner = data[0].id;
+                                    console.log('ID Capturada');
+                                    console.log(data[0].id);
+                                    $.ajax({
+                                        url: '{{ route('vetmascota.store') }}',
+                                        type: "POST",
+                                        data: {
+                                            vet_clientes_id: idowner,
+                                            nombre: nombre_m,
+                                            especie: especie_m,
+                                            raza: raza_m,
+                                            edad: edad_m,
+    
+                                        },
+                                        success: function(data) {
+                                            console.log(
+                                                'Mascota creada')
+                                            alertify.set('notifier', 'position',
+                                                'top-center');
+                                            alertify.set('notifier', 'delay', 3);
+                                            alertify.success(data);
+    
+                                        },
+                                    });
+                                }
+                            });
+                        } else {
+                            alertify.set('notifier', 'position', 'top-center');
+                            alertify.set('notifier', 'delay', 3);
+                            alertify.error('Ningun campo puede estar vacio. Por favor ingrese todos los datos');
+                        }
+    
+    
+                    })
+                });
     </script>
     @endsection

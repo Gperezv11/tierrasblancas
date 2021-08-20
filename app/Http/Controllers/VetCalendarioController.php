@@ -44,15 +44,16 @@ class VetCalendarioController extends Controller
     {
         $c = new Calendario;
 
-        $c->title = $request->title;
-        $c->medico = $request->medico;
-        $c->rut_cliente = $request->rut_cliente;
-        $c->nombre_cliente = $request->nombre_cliente;
-        $c->email = $request->email;
-        $c->fono = $request->fono;
-        $c->descripcio = $request->descripcion;
-        $c->start = $request->start;
-        $c->end = $request->end;
+        $c->title           = $request->title;
+        $c->medico          = $request->medico;
+        $c->rut_cliente     = $request->rut_cliente;
+        $c->nombre_cliente  = $request->nombre_cliente;
+        $c->email           = $request->email;
+        $c->fono            = $request->fono;
+        $c->tservicio       = $request->tservicio;
+        $c->descripcio      = $request->descripcion;
+        $c->start           = $request->start;
+        $c->end             = $request->end;
 
         $c->save();
     }
@@ -92,15 +93,16 @@ class VetCalendarioController extends Controller
     {
         $evento = Calendario::find($id);
 
-        $evento->title = $request->title;
-        $evento->medico = $request->medico;
-        $evento->rut_cliente = $request->rut_cliente;
-        $evento->nombre_cliente = $request->nombre_cliente;
-        $evento->email = $request->email;
-        $evento->fono = $request->fono;
-        $evento->descripcio = $request->descripcion;
-        $evento->start = $request->start;
-        $evento->end = $request->end;
+        $evento->title              = $request->title;
+        $evento->medico             = $request->medico;
+        $evento->rut_cliente        = $request->rut_cliente;
+        $evento->nombre_cliente     = $request->nombre_cliente;
+        $evento->email              = $request->email;
+        $evento->fono               = $request->fono;
+        $evento->tservicio          = $request->tservicio;
+        $evento->descripcio         = $request->descripcion;
+        $evento->start              = $request->start;
+        $evento->end                = $request->end;
 
         $evento->save();
     }

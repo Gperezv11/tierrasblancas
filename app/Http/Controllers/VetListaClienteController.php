@@ -70,7 +70,21 @@ class VetListaClienteController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $c = VetCliente::find($id);
+
+        $c->rut                 =   $request->rut_edit;
+        $c->nombre              =   $request->nombre_edit;
+        $c->apellido_p          =   $request->apellidop_edit;
+        $c->apellido_m          =   $request->apellidom_edit;
+        $c->direccion           =   $request->direc_edit;
+        $c->sector              =   $request->sector_edit;
+        $c->correo              =   $request->correo_edit;                      
+        $c->telefono            =   $request->telefono_edit;            
+        $c->referencia          =   $request->referencia_edit;          
+
+        $c->save();
+
+        return redirect('lvetcliente');
     }
 
     /**

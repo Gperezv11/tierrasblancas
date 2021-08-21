@@ -397,8 +397,7 @@ RTL version -->
                         $('#form_clientemascota').trigger("reset");
 
     
-                        if (rut != "" && nombre_d != "" && pat_d != "" && mat_d != "" && comuna_d != "" && dire_d != "" && sector_d != "" && email_d != "" && tele_d != "" &&
-                            ref_d != "") {
+                        if (rut != "" && nombre_d != "" && pat_d != "" && mat_d != "" && comuna_d != "" && dire_d != "" && sector_d != "" && email_d != "" && tele_d != "") {
     
                             $.ajaxSetup({
                                 headers: {
@@ -468,8 +467,6 @@ RTL version -->
     
                                         },
                                         success: function(data) {
-                                            console.log(
-                                                'Mascota creada')
                                             alertify.set('notifier', 'position',
                                                 'top-center');
                                             alertify.set('notifier', 'delay', 3);

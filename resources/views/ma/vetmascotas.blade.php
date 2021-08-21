@@ -30,8 +30,9 @@
                         <table id="tabla-animal" class="table table-hover dt-responsive" cellspacing="0" width="100%">
                             <thead>
                                 <tr>
-                                    <td>Nombre</td>
-                                    <td>Dueño</td>
+                                    <td>Rut</td>
+                                    <td>Nombre Dueño</td>
+                                    <td>Nombre Mascota</td>
                                     <td>Especie</td>
                                     <td>Raza</td>
                                     <td>Edad</td>
@@ -41,7 +42,8 @@
                             <tbody>
                                 @foreach ($mascota as $m)
                                 <tr>
-                                    <td>{{ $m->nombre }}</td>
+                                    <td>{{ $m->dueno->rut }}</td>
+                                    <td>{{ $m->dueno->nombre }}</td>
                                     <td>{{ $m->nombre }}</td>
                                     <td>{{ $m->especie }}</td>
                                     <td>{{ $m->raza }}</td>

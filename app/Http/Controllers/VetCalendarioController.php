@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Calendario;
 use Carbon\Carbon;
 use App\Models\VetMedico;
+use App\Models\VetCliente;
 
 class VetCalendarioController extends Controller
 {
@@ -22,6 +23,13 @@ class VetCalendarioController extends Controller
     {
         $medicos = VetMedico::all();
         return view('ma.calendario')->with('medicos', $medicos);
+    }
+
+    public function frcc(Request $request)
+    {
+        $data = VetCliente::select('*')->where('rut', $request->rut)->take(100)->get();
+
+        return response()->json($data);
     }
 
     /**
@@ -44,18 +52,22 @@ class VetCalendarioController extends Controller
     {
         $c = new Calendario;
 
-        $c->title           = $request->title;
-        $c->medico          = $request->medico;
-        $c->rut_cliente     = $request->rut_cliente;
-        $c->nombre_cliente  = $request->nombre_cliente;
-        $c->email           = $request->email;
-        $c->fono            = $request->fono;
-        $c->tservicio       = $request->tservicio;
-        $c->descripcio      = $request->descripcion;
-        $c->start           = $request->start;
-        $c->end             = $request->end;
+        $c->title = $request->title;
+        $c->medico = $request->medico;
+        $c->rut_cliente = $request->rut_cliente;
+        $c->nombre_cliente = $request->nombre_cliente;
+        $c->email = $request->email;
+        $c->fono = $request->fono;
+        $c->descripcio = $request->descripcion;
+        $c->start = $request->start;
+        $c->end = $request->end;
 
         $c->save();
+        $date = new Carbon($c->start);
+        $date = $date->format('d/m/Y');
+        $datetime = new Carbon($c->start);
+        $datetime = $datetime->format('H:i');
+        Mail::to($c->email)->send(new TestMail($c,$date,$datetime));
     }
 
     /**
@@ -93,18 +105,22 @@ class VetCalendarioController extends Controller
     {
         $evento = Calendario::find($id);
 
-        $evento->title              = $request->title;
-        $evento->medico             = $request->medico;
-        $evento->rut_cliente        = $request->rut_cliente;
-        $evento->nombre_cliente     = $request->nombre_cliente;
-        $evento->email              = $request->email;
-        $evento->fono               = $request->fono;
-        $evento->tservicio          = $request->tservicio;
-        $evento->descripcio         = $request->descripcion;
-        $evento->start              = $request->start;
-        $evento->end                = $request->end;
+        $evento->title = $request->title;
+        $evento->medico = $request->medico;
+        $evento->rut_cliente = $request->rut_cliente;
+        $evento->nombre_cliente = $request->nombre_cliente;
+        $evento->email = $request->email;
+        $evento->fono = $request->fono;
+        $evento->descripcio = $request->descripcion;
+        $evento->start = $request->start;
+        $evento->end = $request->end;
 
         $evento->save();
+        $date = new Carbon($evento->start);
+        $date = $date->format('d/m/Y');
+        $datetime = new Carbon($evento->start);
+        $datetime = $datetime->format('H:i');
+        Mail::to(request('email'))->send(new EmailEdit($evento,$date,$datetime));
     }
 
     /**
@@ -116,7 +132,31 @@ class VetCalendarioController extends Controller
     public function destroy($id)
     {
         //
+        $eliminar = Calendario::find($id);
         $evento = Calendario::find($id)->delete();
+        $date = new Carbon($eliminar['start']);
+        $date = $date->format('d/m/Y');
+        $datetime = new Carbon($eliminar['start']);
+        $datetime = $datetime->format('H:i');
+        Mail::to($eliminar['email'])->send(new EmailDelete($eliminar,$date,$datetime));
         return response()->json($evento);
     }
+
+    public function Recordatorio($id){
+        $dateactual = new Carbon();
+        $dateactual = $dateactual->toDateString();
+        $recordar = Calendario::find($id);
+        $datep = new Carbon($recordar['start']);
+        $datep = $datep->toDateString();
+        if($dateactual == $datep){
+          $dia = 'hoy';
+        }
+        $dia = 'mañana';
+        $date = new Carbon($recordar['start']);
+            $date = $date->format('d/m/Y');
+            $datetime = new Carbon($recordar['start']);
+            $datetime = $datetime->format('H:i');
+          Mail::to($recordar['email'])->send(new EmailRecordatorio($recordar,$date,$datetime,$dia));
+    }
+
 }

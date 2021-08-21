@@ -102,6 +102,9 @@ class VetMascotaController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $m = VetMascota::find($id);
+        $m->delete();
+
+        return redirect('vetmascota');
     }
 }
